@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>屏幕切换悬浮球</title>
+<style>
+  :root {
+    color-scheme: light;
+    font: 16px/1.6 "Microsoft YaHei UI", "PingFang SC", sans-serif;
+    color: #142830;
+    background: #edf3f3;
+    --accent: #235847;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  main { width: min(100% - 32px, 900px); margin: clamp(24px, 7vw, 84px) auto; }
+  header { margin-bottom: 28px; }
+  h1 { margin: 0; font-size: clamp(30px, 6vw, 58px); line-height: 1.15; }
+  p { margin: 8px 0 0; color: #465a62; }
+  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  article { padding: clamp(18px, 4vw, 32px); border-radius: 24px; background: #fff; border: 1px solid #d8e6e5; }
+  h2 { margin: 0; font-size: clamp(23px, 4vw, 31px); line-height: 1.2; }
+  .diagram {
+    aspect-ratio: 2.08;
+    margin: 18px 0 8px;
+    display: grid;
+    grid-template-columns: 4fr 5fr;
+    gap: 7%;
+    align-items: end;
+    padding: 0 0 16px;
+  }
+  .device { position: relative; }
+  .display {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    border: clamp(4px, .75vw, 7px) solid #233e47;
+    border-radius: 9px;
+    background: linear-gradient(150deg, #cfeef0, #62bfb4);
+  }
+  .monitor .display, .clone .display { aspect-ratio: 16 / 9; background: linear-gradient(155deg, #e1e3ff, #9aaceb); }
+  .clone .laptop .display { aspect-ratio: 16 / 10; }
+  .laptop::after {
+    content: "";
+    position: absolute;
+    inset: 100% -7% auto;
+    height: 5px;
+    background: #233e47;
+    border-radius: 0 0 10px 10px;
+  }
+  .monitor::before, .monitor::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    translate: -50% 0;
+    background: #233e47;
+  }
+  .monitor::before { width: 9%; height: 12px; top: 100%; }
+  .monitor::after { width: 40%; height: 4px; top: calc(100% + 12px); border-radius: 4px; }
+  .window {
+    position: absolute;
+    inset: 19% 15%;
+    border-radius: 5px;
+    background: #f8ffff;
+    box-shadow: inset 0 9px 0 #e6ecee;
+  }
+  .window::after {
+    content: "";
+    position: absolute;
+    top: 42%;
+    left: 14%;
+    width: 54%;
+    height: 22%;
+    border-block: 2px solid #718c96;
+  }
+  .off .laptop .display { background: #1b2c38; }
+  .off .laptop .window { display: none; }
+  .dot {
+    display: inline-grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: url("logo.svg") center / contain no-repeat;
+  }
+  .monitor .dot {
+    position: absolute;
+    right: 5%;
+    bottom: 8%;
+    width: clamp(18px, 3vw, 31px);
+    height: auto;
+    aspect-ratio: 1;
+  }
+  .steps { margin-top: 20px; }
+  .steps h2 { margin-bottom: 14px; }
+  .settings { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+  .setting { background: #edf3ff; color: #1c2a48; border: 1px solid #d5e1f2; border-radius: 9px; padding: 8px 12px; }
+  .setting b { display: block; }
+  .apply { background: var(--accent); color: white; border-color: transparent; }
+  footer { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+  footer p { margin: 0; }
+  @media (max-width: 700px) {
+    .modes { grid-template-columns: 1fr; }
+    .diagram { aspect-ratio: 2.4; max-width: 345px; margin-inline: auto; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>屏幕切换悬浮球</h1>
+    <p>打开 ScreenSwitch.exe，把鼠标移到球上。</p>
+  </header>
+  <div class="modes">
+    <article>
+      <h2>扩展屏幕</h2>
+      <div class="diagram" aria-hidden="true">
+        <div class="device laptop"><div class="display"><div class="window"></div></div></div>
+        <div class="device monitor"><div class="display"><div class="window"></div><span class="dot"></span></div></div>
+      </div>
+      <p>两块屏幕各显示一部分桌面。</p>
+    </article>
+    <article class="clone">
+      <h2>复制屏幕</h2>
+      <div class="diagram" aria-hidden="true">
+        <div class="device laptop"><div class="display"><div class="window"></div></div></div>
+        <div class="device monitor"><div class="display"><div class="window"></div></div></div>
+      </div>
+      <p>两块屏幕显示同样的画面。</p>
+    </article>
+    <article class="off">
+      <h2>仅选中屏</h2>
+      <div class="diagram" aria-hidden="true">
+        <div class="device laptop"><div class="display"></div></div>
+        <div class="device monitor"><div class="display"><div class="window"></div><span class="dot"></span></div></div>
+      </div>
+      <p>选外接屏，笔记本屏幕就会熄灭。</p>
+    </article>
+  </div>
+  <p>有三块或更多屏幕时，打开「屏幕组合」，勾选要亮的屏幕，再点「应用组合」。</p>
+  <p>扩展模式下打开「排列」，拖动屏幕调整左右或上下位置，再点「应用排列」。确认后会保存新位置。</p>
+  <p>点「投屏」，在「投屏选择」里选要投的屏幕。投屏中也可以直接在这里换屏，小窗会原地更新画面。小窗首次出现在面板所在的屏幕上，放得下就按原始像素显示，放不下就等比缩小。拖动边缘时也会保持画面比例。小窗会记住跨屏拖动后的位置，上次所在的屏幕拔掉后会回到当前屏。鼠标移入小窗时，右上角会显示置顶、最小化、全屏和停止按钮。</p>
+  <p>右键悬浮球可以隐藏。点右下角系统托盘里的「屏幕切换」，或按 Ctrl + Alt + E（或你设置的快捷键），都可以重新显示悬浮球。</p>
+  <article class="steps">
+    <h2>调整画面</h2>
+    <div class="settings" aria-label="选择屏幕，然后设置分辨率和刷新率，点应用">
+      <span class="setting"><b>选择屏幕</b>外接屏 ▾</span>
+      <span class="setting"><b>分辨率</b>2560 × 1440 ▾</span>
+      <span class="setting"><b>刷新率</b>144 Hz ▾</span>
+      <span class="setting apply"><b>应用</b></span>
+    </div>
+    <p>「屏幕方向」可选横屏或竖屏。确认画面正常后，点「保留更改」。15 秒内没确认就会自动恢复。</p>
+  </article>
+  <footer>
+    <span class="dot" aria-hidden="true"></span>
+    <p><strong>拖动</strong>可以挪位置。贴到屏幕边缘后悬浮球会收起，鼠标碰到边缘的小条就会展开。悬浮球会记住最后的位置，重启后贴边的球仍保持收起。面板右上角的「配色」可以换颜色，将磨砂透明度调到 0–100%。</p>
+  </footer>
+</main>
+</body>
+</html>
