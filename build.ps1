@@ -9,12 +9,13 @@ $sources = Get-ChildItem -LiteralPath $PSScriptRoot -Filter '*.cs' -File |
     Select-Object -ExpandProperty FullName
 $output = Join-Path $PSScriptRoot 'dist'
 $icon = Join-Path $PSScriptRoot 'ScreenSwitch.ico'
+$logo = Join-Path $PSScriptRoot 'logo.png'
 $executable = Join-Path $output 'ScreenSwitch.exe'
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 
 & $compiler /nologo /warnaserror+ /target:winexe /optimize+ /codepage:65001 `
     /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:Accessibility.dll `
-    "/win32icon:$icon" "/out:$executable" $sources
+    "/win32icon:$icon" "/resource:$logo,ScreenSwitchLogo.png" "/out:$executable" $sources
 if ($LASTEXITCODE -ne 0) {
     throw "Build failed with exit code $LASTEXITCODE."
 }
